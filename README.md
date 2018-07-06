@@ -21,3 +21,8 @@ Sometimes you just want to skim over a whole bunch of block content as text. [Th
 ### Convert quotation marks in block text
 
 Someone wanted to convert "whatever" to «whatever» when rendering. [convertQuotationMarks()](snippets/convertQuotationMarks.js) to the rescue!
+
+## License
+
+All code is MIT-licensed. See LICENSE.
+
