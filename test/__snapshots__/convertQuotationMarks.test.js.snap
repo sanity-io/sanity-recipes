@@ -1,0 +1,166 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`can converts quotation marks to specific characters 1`] = `
+Array [
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [],
+        "text": "Warning: “",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Sanity”",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": " is",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "em",
+        ],
+        "text": " “addictive”.",
+      },
+    ],
+  },
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Unmatched quotation marks? “",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "sure, why not?",
+      },
+    ],
+  },
+]
+`;
+
+exports[`can converts single quotation marks 1`] = `
+Array [
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [],
+        "text": "Warning: «",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Sanity»",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": " is",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "em",
+        ],
+        "text": " «addictive».",
+      },
+    ],
+  },
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Unmatched quotation marks? «",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "sure, why not?",
+      },
+    ],
+  },
+]
+`;
+
+exports[`converts quotation marks to guillemets by default 1`] = `
+Array [
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [],
+        "text": "Warning: «",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Sanity»",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": " is",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "em",
+        ],
+        "text": " «addictive».",
+      },
+    ],
+  },
+  Object {
+    "_type": "block",
+    "children": Array [
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "Unmatched quotation marks? «",
+      },
+      Object {
+        "_type": "span",
+        "marks": Array [
+          "strong",
+        ],
+        "text": "sure, why not?",
+      },
+    ],
+  },
+]
+`;

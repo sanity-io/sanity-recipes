@@ -1,0 +1,545 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts blocks to text while adding placeholders for non-text blocks 1`] = `
+"The idea behind our query language GROQ is to be able to describe exactly what information your application needs, potentially joining together information from several sets of documents, then stitching together a very specific response with only the exact fields you need.
+
+If you need help setting up a client to perform these queries in your front end, you should check out the documentation for the client for javascript or PHP.
+
+[image block]
+
+Introduction
+
+There are loads of advanced topics to cover, but let us start with the basics. We will take this simple query and pick it apart:
+
+[code block]
+
+A query typically starts with *. This asterisk represents every document in your dataset. To do any useful work this is typically followed by a filter in brackets. The filter above has two terms:
+
+The filter
+
+First we filter by document type. Every document in Sanity is required to have a type, and the type is always in the _type field. (We prefix any Sanity-specific fields with an underscore in an attempt to avoid clashing with any of your field names.) So _type == 'movie' limits this query to documents of the type ‘movie’. && is the operator “and” of course.
+
+The second term releaseYear > 1979 assumes that the movies have a field called releaseYear contain numbers. It will match any document where this number is larger than or equal to 1979.
+
+Projections
+
+So if we run this query, the result will be an array containing all movies from the year 1979 onwards in the dataset. Nice! However in a typical application movies might be huge documents containing information on actors, staff, posters, tag-lines, show-times, ratings and what not. If our goal is to render a list of movies in an overview, we are wasting bandwidth. Projections to the rescue.
+
+The typical projection is wrapped in braces and describe the data we want to see for each movie. A nice and simple projection for this query would give us the id, title and release year for each movie. It could look like this: {_id, title, releaseYear}. Putting it all together:
+
+[code block]
+
+Basic sorting
+
+Now there is another problem. Our movies appear in some unspecified order. Let’s say we want to sort our movies by year. For this we use the order-function. Order takes a number of fields and sort directions and orders your documents accordingly. We wanted to sort our movies by releaseYear. This is easily accomplished with order(releaseYear), like this:
+
+[code block]
+
+(We need the | operator here in front of the order()-function, we'll discuss that more later.)
+
+We think of GROQ statements as describing a data flow from left to right. First everything (*) flows through the filter [_type == 'movie' && …], then all those movies flow through the order()-function which are then all mapped through the projection {_id, title, ...} which picks out the bits we want returned.
+
+The order-function accepts a list of fields, and optionally you can specify the sort direction for each field. If you wanted to sort the movies by year, and then within each year we want them alphabetical by title, we could use this ordering: order(releaseYear, title) And if we wanted the newest movies first, we could reverse the direction like this: order(releaseYear desc, title).
+
+(asc means “ascending” and desc means descending in this context. If you leave out the sort-direction, Sanity will assume you want the ascending order.)
+
+Slicing the result set
+
+This brings us to our final problem for this query: There are many movies in the world. Maybe our dataset contains tens of thousands. We need a way to describe which slice of that list we want to show. This is done using a selector. Let’s say we just wanted the first movie, we could add a [0] at the end. This works exactly like an array accessor and would return only the first element. If we want a slice, we can add the range operator like this: [0...100] this would return the first hundred movies from index 0 through 99. Obviously we can just as well ask for [1023...1048] or any other slice we desire. So there we are, our first basic query with filtering, ordering, projections and selector:
+
+[code block]
+
+References and joins
+
+A reference in Sanity is a link from one document to another. Standard references are “hard” meaning when a document references another document, the target document must exist, and is actually prevented from being deleted until the reference is removed. (There is also weak-references that do not \\"hold on to\\" the target. You make them by adding a _weak-key to the reference object like this: {_ref: \\"<document-id>\\", _weak: true})
+
+Let’s say we have “person”-type documents that looks something like this:
+
+[code block]
+
+Keeping it simple, maybe our movies had a field director that contained a reference to a person. It could look something like this:
+
+[code block]
+
+Remember Sanity-specific fields are prefixed with an underscore, and an object containing a _ref key appearing anywhere in the document becomes a hard reference.
+
+Expanding references
+
+Now we can do a number of useful things with this reference. The most basic thing is expanding the reference in place. Let’s revisit our movie-queries from the introduction.
+
+[code block]
+
+Let’s say we wanted to include the director in the returned result. If we didn't know any better, we'd perhaps try something like this:
+
+[code block]
+
+But if we just naïvely include the director in like this, we will just get whatever is in the director field on this document, which is the literal reference description:
+
+[code block]
+
+This is obviously not what we wanted, we wanted to follow that reference! By adding the dereferencing operator -> we ask Sanity to follow the reference and replace the it with the actual content of the document referenced:
+
+[code block]
+
+Now, this is useful. We’d get something like this:
+
+[code block]
+
+Then maybe we didn’t want all that metadata with our director? We can add a separate projection for our director:
+
+[code block]
+
+Our Alien-movie now looks neat like this:
+
+[code block]
+
+But we can do one better. We are not limited to the existing fields in the document in our projections, we can actually declare new fields. Let’s say we are building our compact movie list and we wanted just the title, year and director name. We can get minimal cruft by extracting just the name and putting it in a new field, like this:
+
+[code block]
+
+Now our Alien movie record is super neat:
+
+[code block]
+
+Filtering by references
+
+When dealing with references, we have a useful function called references() which can be used in filters to select only documents that reference specific other documents. Let’s say we want to list every movie Ridley Scott has been involved in. It’s as simple as this:
+
+[code block]
+
+Our first join
+
+It is time to write our first proper join: Say we wanted to list people and include all the movies they were involved in? We’ll be querying the “person”-type documents, but in the projections for each person, we’ll ask for the movies they have been involved in. To do this we have to briefly cover the parent-operator ^. Let’s look at the query first:
+
+[code block]
+
+In a join, the parent operator is a way to reference the “parent” document. In this example the outer query for “person”-type documents fetches a bunch of people, and for each person it returns the _id and name. Then we want to fetch the movies referencing that person. Now we declare the new field “movies” where we start a new query for “movie”-type documents, but for each person we want to limit our movie-query to movies referencing that person. To achieve this we need the _id of the person, but if we just wrote _id in the movies-query we’d reference the _id of the movie. To get to the fields of the person record we go “up” one level using the parent operator ^. So ^ means the specific “person”-document that our movie-query is about, and then ^._id is the _id of that person, just as ^.name would be her name. So when we say references(^._id) in the query above, we limit our movies to movies referencing the current person.
+
+Naked projections
+
+There is one more new thing we haven’t talked about in this query. We could have written the movies-sub-query like this:
+
+[code block]
+
+Our list of movies would have looked something like this:
+
+[code block]
+
+Since we just wanted the titles, we can use a “naked projection”. By just naming the field we want, like this:
+
+[code block]
+
+We get a nice, simple array of values, like this:
+
+[code block]
+
+So, for completeness, the result of the full person w/movies query above could look something like this:
+
+[code block]
+
+More ways to filter
+
+Sanity supports a growing number of ways to filter your documents. We have shown simple attribute comparisions with _type == ‘movie’ and  releaseYear > 1979. We have shown filtering by references using the references()-function. In addition we support:
+
+Text search using the match operator, e.g. *[title match \\"Alien*\\"]
+
+Filtering by the presence of a field, e.g. *[defined(status)] which only match document that have the status property set to any value.
+
+The in-operator which matches values in arrays, as in *[\\"sci-fi\\" in genres], that matches all documents where genres is an array and that array contains the value \\"sci-fi\\".
+
+You can of course combine these filters using the boolean operators && (and), || (or), ! (not), like this *[_type == \\"movie\\" && (!(\\"sci-fi\\" in genres) || releaseYear > 1979)].
+
+We are working on a full reference for the GROQ feature set. In the mean time you'll find a comprehensive set of examples in the cheat sheet.
+
+Queries in projections
+
+A useful thing in GROQ is that filtering and projections also can be used inside your projections. Let’s say you work for an architect and every project has a number of milestones. A document might look something like this:
+
+[code block]
+
+And let’s say the view we are producing is about showing the current status of the project. We could achieve this by finding the latest milestone and extracting its status tag. This can be done in GROQ like this:
+
+[code block]
+
+Let’s pick apart the status query milestones|order(year desc)[0].status in some detail:
+
+First we take the field milestones which contain the (potentially unordered) list of milestones for the project. Using the pipe-operator | we send the contents of this array to the order function with is instructed to sort the array by year in descending order order(year desc). Then We take only the first element [0] (which is the latest milestone) and return the value of it’s status field. So now our project list would look something like this:
+
+[code block]
+
+Let’s try another clever trick querying the contents of this object. Instead of a status field, we just want a boolean flag telling whether the project is completed. We could achieve this like this:
+
+[code block]
+
+Here we take the milestones, but select only the ones having the status “completed”. Then we count() the number of milestones matching this constraint. If that count is > 0 the result is true. So now our result would look something like this:
+
+[code block]
+
+Some comments on the pipe-operator
+
+In the project-status example above we used the pipe operator | for a second time. Let's explore that in some detail:
+
+[code block]
+
+The pipe operator takes the output from its left hand side and sends it to the operation to its right. \\"But isn’t this what all GROQ statements does?\\", I hear you ask. And you’d be right. Actually, if you prefer, you can use the pipe operator a lot more. These queries are the same:
+
+[code block]
+
+To make basic GROQ statements appear simpler we automatically insert the pipe operator when it is obvious. Basically this happens when the {} or [] characters are used. In one sense they are always parsed like this |{}and |[].
+
+In some situations, like in the project-status example, we needed an explicit pipe-operator because there were no way for the GROQ parser to infer it. milestones order(year desc) would be a syntax error, so in this instance we have to explicitly state the pipe operator, like this: milestones|order(year desc). As a simple rule of thumb you always need the | in front of order() and in the future any other function that handle document streams like order() does.
+
+When programatically building queries in the front end, the pipe-operator can be very handy. You can chain several statements together using the pipe-operator knowing that you never create an ambiguous statement. Something like this:
+
+[code block]
+
+Which would build the query:
+
+[code block]
+
+Which is equivalent to:
+
+[code block]
+
+Some fine points on arrays and projections
+
+Let’s consider this document with some deep structure:
+
+[code block]
+
+So we have a movie with a poster image, and an array of other images. Each image has some metadata represented here by a caption, then a reference to an asset record containing all the metadata on the specific image including its url. A simplified asset record could look something like this:
+
+[code block]
+
+Now we can easily retrieve the poster image url and attach it to our result for each movies like this:
+
+[code block]
+
+But what if we wanted to do the same thing for the other images? Since the images field is an array, we can’t just images.asset->url. We somehow have to apply the asset->url-part to each member of the array. This is accomplished by adding a blank filter, like this: images[].asset->url which will return the image urls as a simple array. So the full query would look like this:
+
+[code block]
+
+This would yield something like this:
+
+[code block]
+
+If you wanted a richer data-set with your images you could use a normal projection like this (taking care to add the blank filter to apply the projection to every array member):
+
+[code block]
+
+Now your result looks something like this:
+
+[code block]
+
+The ellipsis operator
+
+Sometimes you might want to compute some properties of a document, but still want the entire set of attributes returned. This can be a problem since the moment you specify a projection, you'll have to list all the fields you want included. Let's say we wanted to count the actors in a movie doing something like this:
+
+[code block]
+
+There is an obvious problem with this. We just wanted to add a custom field, but since we needed a projection to do it, now all we got is something like this:
+
+[code block]
+
+What we wanted was our custom field in addition to the normal fields. This can be achieved with the ellipsis operator. By appending it like this, we effectively say we want the fields we just specified, but also everything else:
+
+[code block]
+
+Which brings us a result that could look something like this:
+
+[code block]
+
+Queries that don't start with an *
+
+We said initially that most GROQ queries start with the asterisk, but they don't have to. Any valid GROQ expression can be the entire query. This is a valid query:
+
+[code block]
+
+It will return the number of documents in the dataset. This is also valid:
+
+[code block]
+
+It will return true if any document in the entire dataset has a name-field containing the word \\"sigourney\\".
+
+More usefully, you can actually have a projection be your outer statement. Like this:
+
+[code block]
+
+This combines three completely separate queries into one query and returns an object containing the result of all of them. This can be a useful way to speed up page loads. By combining queries in this manner you can often get all of the core content for a web page to load in a single, cacheable query.
+
+Finally
+
+So there you go, this should cover 99% of what you need to understand in day-to-day use of GROQ. Reference documentation is imminent, but while we're writing it you should partake our Query Cheat Sheet which contain examples of all operators and functions currently supported."
+`;
+
+exports[`converts blocks to text while removing non-text blocks by default 1`] = `
+"The idea behind our query language GROQ is to be able to describe exactly what information your application needs, potentially joining together information from several sets of documents, then stitching together a very specific response with only the exact fields you need.
+
+If you need help setting up a client to perform these queries in your front end, you should check out the documentation for the client for javascript or PHP.
+
+
+
+Introduction
+
+There are loads of advanced topics to cover, but let us start with the basics. We will take this simple query and pick it apart:
+
+
+
+A query typically starts with *. This asterisk represents every document in your dataset. To do any useful work this is typically followed by a filter in brackets. The filter above has two terms:
+
+The filter
+
+First we filter by document type. Every document in Sanity is required to have a type, and the type is always in the _type field. (We prefix any Sanity-specific fields with an underscore in an attempt to avoid clashing with any of your field names.) So _type == 'movie' limits this query to documents of the type ‘movie’. && is the operator “and” of course.
+
+The second term releaseYear > 1979 assumes that the movies have a field called releaseYear contain numbers. It will match any document where this number is larger than or equal to 1979.
+
+Projections
+
+So if we run this query, the result will be an array containing all movies from the year 1979 onwards in the dataset. Nice! However in a typical application movies might be huge documents containing information on actors, staff, posters, tag-lines, show-times, ratings and what not. If our goal is to render a list of movies in an overview, we are wasting bandwidth. Projections to the rescue.
+
+The typical projection is wrapped in braces and describe the data we want to see for each movie. A nice and simple projection for this query would give us the id, title and release year for each movie. It could look like this: {_id, title, releaseYear}. Putting it all together:
+
+
+
+Basic sorting
+
+Now there is another problem. Our movies appear in some unspecified order. Let’s say we want to sort our movies by year. For this we use the order-function. Order takes a number of fields and sort directions and orders your documents accordingly. We wanted to sort our movies by releaseYear. This is easily accomplished with order(releaseYear), like this:
+
+
+
+(We need the | operator here in front of the order()-function, we'll discuss that more later.)
+
+We think of GROQ statements as describing a data flow from left to right. First everything (*) flows through the filter [_type == 'movie' && …], then all those movies flow through the order()-function which are then all mapped through the projection {_id, title, ...} which picks out the bits we want returned.
+
+The order-function accepts a list of fields, and optionally you can specify the sort direction for each field. If you wanted to sort the movies by year, and then within each year we want them alphabetical by title, we could use this ordering: order(releaseYear, title) And if we wanted the newest movies first, we could reverse the direction like this: order(releaseYear desc, title).
+
+(asc means “ascending” and desc means descending in this context. If you leave out the sort-direction, Sanity will assume you want the ascending order.)
+
+Slicing the result set
+
+This brings us to our final problem for this query: There are many movies in the world. Maybe our dataset contains tens of thousands. We need a way to describe which slice of that list we want to show. This is done using a selector. Let’s say we just wanted the first movie, we could add a [0] at the end. This works exactly like an array accessor and would return only the first element. If we want a slice, we can add the range operator like this: [0...100] this would return the first hundred movies from index 0 through 99. Obviously we can just as well ask for [1023...1048] or any other slice we desire. So there we are, our first basic query with filtering, ordering, projections and selector:
+
+
+
+References and joins
+
+A reference in Sanity is a link from one document to another. Standard references are “hard” meaning when a document references another document, the target document must exist, and is actually prevented from being deleted until the reference is removed. (There is also weak-references that do not \\"hold on to\\" the target. You make them by adding a _weak-key to the reference object like this: {_ref: \\"<document-id>\\", _weak: true})
+
+Let’s say we have “person”-type documents that looks something like this:
+
+
+
+Keeping it simple, maybe our movies had a field director that contained a reference to a person. It could look something like this:
+
+
+
+Remember Sanity-specific fields are prefixed with an underscore, and an object containing a _ref key appearing anywhere in the document becomes a hard reference.
+
+Expanding references
+
+Now we can do a number of useful things with this reference. The most basic thing is expanding the reference in place. Let’s revisit our movie-queries from the introduction.
+
+
+
+Let’s say we wanted to include the director in the returned result. If we didn't know any better, we'd perhaps try something like this:
+
+
+
+But if we just naïvely include the director in like this, we will just get whatever is in the director field on this document, which is the literal reference description:
+
+
+
+This is obviously not what we wanted, we wanted to follow that reference! By adding the dereferencing operator -> we ask Sanity to follow the reference and replace the it with the actual content of the document referenced:
+
+
+
+Now, this is useful. We’d get something like this:
+
+
+
+Then maybe we didn’t want all that metadata with our director? We can add a separate projection for our director:
+
+
+
+Our Alien-movie now looks neat like this:
+
+
+
+But we can do one better. We are not limited to the existing fields in the document in our projections, we can actually declare new fields. Let’s say we are building our compact movie list and we wanted just the title, year and director name. We can get minimal cruft by extracting just the name and putting it in a new field, like this:
+
+
+
+Now our Alien movie record is super neat:
+
+
+
+Filtering by references
+
+When dealing with references, we have a useful function called references() which can be used in filters to select only documents that reference specific other documents. Let’s say we want to list every movie Ridley Scott has been involved in. It’s as simple as this:
+
+
+
+Our first join
+
+It is time to write our first proper join: Say we wanted to list people and include all the movies they were involved in? We’ll be querying the “person”-type documents, but in the projections for each person, we’ll ask for the movies they have been involved in. To do this we have to briefly cover the parent-operator ^. Let’s look at the query first:
+
+
+
+In a join, the parent operator is a way to reference the “parent” document. In this example the outer query for “person”-type documents fetches a bunch of people, and for each person it returns the _id and name. Then we want to fetch the movies referencing that person. Now we declare the new field “movies” where we start a new query for “movie”-type documents, but for each person we want to limit our movie-query to movies referencing that person. To achieve this we need the _id of the person, but if we just wrote _id in the movies-query we’d reference the _id of the movie. To get to the fields of the person record we go “up” one level using the parent operator ^. So ^ means the specific “person”-document that our movie-query is about, and then ^._id is the _id of that person, just as ^.name would be her name. So when we say references(^._id) in the query above, we limit our movies to movies referencing the current person.
+
+Naked projections
+
+There is one more new thing we haven’t talked about in this query. We could have written the movies-sub-query like this:
+
+
+
+Our list of movies would have looked something like this:
+
+
+
+Since we just wanted the titles, we can use a “naked projection”. By just naming the field we want, like this:
+
+
+
+We get a nice, simple array of values, like this:
+
+
+
+So, for completeness, the result of the full person w/movies query above could look something like this:
+
+
+
+More ways to filter
+
+Sanity supports a growing number of ways to filter your documents. We have shown simple attribute comparisions with _type == ‘movie’ and  releaseYear > 1979. We have shown filtering by references using the references()-function. In addition we support:
+
+Text search using the match operator, e.g. *[title match \\"Alien*\\"]
+
+Filtering by the presence of a field, e.g. *[defined(status)] which only match document that have the status property set to any value.
+
+The in-operator which matches values in arrays, as in *[\\"sci-fi\\" in genres], that matches all documents where genres is an array and that array contains the value \\"sci-fi\\".
+
+You can of course combine these filters using the boolean operators && (and), || (or), ! (not), like this *[_type == \\"movie\\" && (!(\\"sci-fi\\" in genres) || releaseYear > 1979)].
+
+We are working on a full reference for the GROQ feature set. In the mean time you'll find a comprehensive set of examples in the cheat sheet.
+
+Queries in projections
+
+A useful thing in GROQ is that filtering and projections also can be used inside your projections. Let’s say you work for an architect and every project has a number of milestones. A document might look something like this:
+
+
+
+And let’s say the view we are producing is about showing the current status of the project. We could achieve this by finding the latest milestone and extracting its status tag. This can be done in GROQ like this:
+
+
+
+Let’s pick apart the status query milestones|order(year desc)[0].status in some detail:
+
+First we take the field milestones which contain the (potentially unordered) list of milestones for the project. Using the pipe-operator | we send the contents of this array to the order function with is instructed to sort the array by year in descending order order(year desc). Then We take only the first element [0] (which is the latest milestone) and return the value of it’s status field. So now our project list would look something like this:
+
+
+
+Let’s try another clever trick querying the contents of this object. Instead of a status field, we just want a boolean flag telling whether the project is completed. We could achieve this like this:
+
+
+
+Here we take the milestones, but select only the ones having the status “completed”. Then we count() the number of milestones matching this constraint. If that count is > 0 the result is true. So now our result would look something like this:
+
+
+
+Some comments on the pipe-operator
+
+In the project-status example above we used the pipe operator | for a second time. Let's explore that in some detail:
+
+
+
+The pipe operator takes the output from its left hand side and sends it to the operation to its right. \\"But isn’t this what all GROQ statements does?\\", I hear you ask. And you’d be right. Actually, if you prefer, you can use the pipe operator a lot more. These queries are the same:
+
+
+
+To make basic GROQ statements appear simpler we automatically insert the pipe operator when it is obvious. Basically this happens when the {} or [] characters are used. In one sense they are always parsed like this |{}and |[].
+
+In some situations, like in the project-status example, we needed an explicit pipe-operator because there were no way for the GROQ parser to infer it. milestones order(year desc) would be a syntax error, so in this instance we have to explicitly state the pipe operator, like this: milestones|order(year desc). As a simple rule of thumb you always need the | in front of order() and in the future any other function that handle document streams like order() does.
+
+When programatically building queries in the front end, the pipe-operator can be very handy. You can chain several statements together using the pipe-operator knowing that you never create an ambiguous statement. Something like this:
+
+
+
+Which would build the query:
+
+
+
+Which is equivalent to:
+
+
+
+Some fine points on arrays and projections
+
+Let’s consider this document with some deep structure:
+
+
+
+So we have a movie with a poster image, and an array of other images. Each image has some metadata represented here by a caption, then a reference to an asset record containing all the metadata on the specific image including its url. A simplified asset record could look something like this:
+
+
+
+Now we can easily retrieve the poster image url and attach it to our result for each movies like this:
+
+
+
+But what if we wanted to do the same thing for the other images? Since the images field is an array, we can’t just images.asset->url. We somehow have to apply the asset->url-part to each member of the array. This is accomplished by adding a blank filter, like this: images[].asset->url which will return the image urls as a simple array. So the full query would look like this:
+
+
+
+This would yield something like this:
+
+
+
+If you wanted a richer data-set with your images you could use a normal projection like this (taking care to add the blank filter to apply the projection to every array member):
+
+
+
+Now your result looks something like this:
+
+
+
+The ellipsis operator
+
+Sometimes you might want to compute some properties of a document, but still want the entire set of attributes returned. This can be a problem since the moment you specify a projection, you'll have to list all the fields you want included. Let's say we wanted to count the actors in a movie doing something like this:
+
+
+
+There is an obvious problem with this. We just wanted to add a custom field, but since we needed a projection to do it, now all we got is something like this:
+
+
+
+What we wanted was our custom field in addition to the normal fields. This can be achieved with the ellipsis operator. By appending it like this, we effectively say we want the fields we just specified, but also everything else:
+
+
+
+Which brings us a result that could look something like this:
+
+
+
+Queries that don't start with an *
+
+We said initially that most GROQ queries start with the asterisk, but they don't have to. Any valid GROQ expression can be the entire query. This is a valid query:
+
+
+
+It will return the number of documents in the dataset. This is also valid:
+
+
+
+It will return true if any document in the entire dataset has a name-field containing the word \\"sigourney\\".
+
+More usefully, you can actually have a projection be your outer statement. Like this:
+
+
+
+This combines three completely separate queries into one query and returns an object containing the result of all of them. This can be a useful way to speed up page loads. By combining queries in this manner you can often get all of the core content for a web page to load in a single, cacheable query.
+
+Finally
+
+So there you go, this should cover 99% of what you need to understand in day-to-day use of GROQ. Reference documentation is imminent, but while we're writing it you should partake our Query Cheat Sheet which contain examples of all operators and functions currently supported."
+`;

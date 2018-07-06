@@ -1,0 +1,36 @@
+{
+  "name": "@rexxars/sanity-recipes",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Just a collection of recipies / snippets / frequently asked questions about Sanity",
+  "main": "index.js",
+  "pre-commit": [
+    "test"
+  ],
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-sanity": "^0.132.5",
+    "jest": "^23.3.0",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.13.7"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rexxars/sanity-recipes.git"
+  },
+  "keywords": [
+    "sanity",
+    "recipes"
+  ],
+  "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rexxars/sanity-recipes/issues"
+  },
+  "homepage": "https://github.com/rexxars/sanity-recipes#readme",
+  "dependencies": {}
+}
