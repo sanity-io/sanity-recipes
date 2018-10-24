@@ -1,5 +1,5 @@
 {
-  "name": "@rexxars/sanity-recipes",
+  "name": "@sanity/sanity-recipes",
   "private": true,
   "version": "0.0.1",
   "description": "Just a collection of recipies / snippets / frequently asked questions about Sanity",
@@ -20,17 +20,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rexxars/sanity-recipes.git"
+    "url": "git+https://github.com/sanity-io/sanity-recipes.git"
   },
   "keywords": [
     "sanity",
     "recipes"
   ],
-  "author": "Espen Hovlandsdal <espen@hovlandsdal.com>",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rexxars/sanity-recipes/issues"
+    "url": "https://github.com/sanity-io/sanity-recipes/issues"
   },
-  "homepage": "https://github.com/rexxars/sanity-recipes#readme",
+  "homepage": "https://github.com/sanity-io/sanity-recipes#readme",
   "dependencies": {}
 }
