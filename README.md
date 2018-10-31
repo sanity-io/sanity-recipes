@@ -22,7 +22,10 @@ Sometimes you just want to skim over a whole bunch of block content as text. [Th
 
 Someone wanted to convert "whatever" to «whatever» when rendering. [convertQuotationMarks()](snippets/convertQuotationMarks.js) to the rescue!
 
+### Delete unused assets
+
+When uploading images and files, sometimes you are left with assets that are no longer in use by any documents. In these cases, you may want to purge the unused assets to free up some space and clear the clutter. This will probably be a core part of the Sanity toolkit at some point, but until then, [this script](snippets/deleteUnusedAssets.js) should help you!
+
 ## License
 
 All code is MIT-licensed. See LICENSE.
-
