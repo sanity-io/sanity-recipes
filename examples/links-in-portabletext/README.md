@@ -4,8 +4,8 @@ You would often want to have links in rich text. In this example we differ betwe
 
 * `portableText.js` => Configuration of the rich text editor with buttons for internal and external links in the toolbar
 * `post.js` => example schema that use the `portableText` configuration
-* `react.js` => a component that returns rich text with links
-* `portableTextWithResolvedLinks.groq` => A query in GROQ that demonstrates how to resolve internal links
+* `react-portableText.js` => a component that returns rich text with links
+* `joinInternalLink.groq` => A query in GROQ that demonstrates how to resolve internal links
 
 ## Learn more
 
