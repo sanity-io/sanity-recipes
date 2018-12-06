@@ -1,0 +1,17 @@
+*[_type == "post"]{
+  ...,
+  body[]{
+  	...,
+    markDefs[]{
+  		...,
+      // Join the referenced document and get the slug and type
+      _type == "internalLink" => {
+        _key,
+        "slug": @.reference->slug,
+        "type": @.reference->_type,
+        // You can also build an URL using string concatination
+        "url": "https://yourdomain.com/" + @.reference->_type + "/" + @.reference->slug.current
+      }
+    }
+  }
+}
