@@ -9,7 +9,7 @@ const serializers = {
     },
     externalLink: ({mark, children}) => {
       // Read https://css-tricks.com/use-target_blank/
-      const { blank, url } = mark
+      const { blank, href } = mark
       return blank ?
         <a href={url} target="_blank" rel="noopener">{children}</a>
         : <a href={url}>{children}</a>
