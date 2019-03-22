@@ -39,6 +39,12 @@ When uploading images and files, sometimes you are left with assets that are no 
 
 Sometimes you want to change the name of a field. [This function](snippets/renameField.js) can be run with `sanity exec renameField.js --with-user-credentials` and do a migration even while users are working.
 
+## Components
+
+### Filter-aware Custom Input Component
+
+The [Sanity documentation](https://sanity.io/docs) contains several examples on how to create a Custom Input Component, but what if you want one which is also aware of language filter options? [This component](snippets/CustomObjectInputWithLanguageFilter.js) provides a good point of departure for making your own.
+
 ## License
 
 All code is MIT-licensed. See LICENSE.
