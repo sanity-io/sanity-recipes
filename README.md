@@ -34,7 +34,6 @@ Someone wanted to convert "whatever" to «whatever» when rendering. [`convertQu
 
 When uploading images and files, sometimes you are left with assets that are no longer in use by any documents. In these cases, you may want to purge the unused assets to free up some space and clear the clutter. This will probably be a core part of the Sanity toolkit at some point, but until then, [this script](snippets/deleteUnusedAssets.js) should help you!
 
-
 ### Rename fields
 
 Sometimes you want to change the name of a field. [This function](snippets/renameField.js) can be run with `sanity exec renameField.js --with-user-credentials` and do a migration even while users are working.
@@ -44,6 +43,10 @@ Sometimes you want to change the name of a field. [This function](snippets/renam
 ### Filter-aware Custom Input Component
 
 The [Sanity documentation](https://sanity.io/docs) contains several examples on how to create a Custom Input Component, but what if you want one which is also aware of language filter options? [This component](snippets/CustomObjectInputWithLanguageFilter.js) provides a good point of departure for making your own.
+
+### Conditional fields Custom Input Compoent
+
+This [custom input component](snippets/conditionalFieldsCustomInputComponent.js) shows an example of how to render a field conditionally of a field’s value in your document.
 
 ## License
 
