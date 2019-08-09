@@ -4,7 +4,7 @@ Consider the following schema, where we describe a route with a gpx map file of 
 
 ## The schema
 
-```
+```javascript
 import RouteFileInput from "../components/RouteFileInput";
 export default {
   name: "route",
@@ -41,7 +41,7 @@ export default {
 
 ## The input component
 
-```
+```javascript
 import PropTypes from "prop-types";
 import React from "react";
 import Fieldset from "part:@sanity/components/fieldsets/default";
