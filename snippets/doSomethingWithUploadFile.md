@@ -55,13 +55,12 @@ import { withDocument } from "part:@sanity/form-builder";
 import sanityClient from "part:@sanity/base/client";
 import { PatchEvent } from "part:@sanity/form-builder";
 
-function computeBounds(document) {
-  const assetId = document.map.mapfile.asset._ref;
-  const documentId = document._id;
-  return sanityClient.getDocument(assetId).then(asset => {
-    console.log("Computing bounds for map file");
+function computeBounds(asset) {
+  return sanityClient.getDocument(asset._ref).then(asset => {
+    console.log("Computing bounds for map file", asset.url);
     const { url } = asset;
     // Fetch file, and compute bounds here then return the result
+    // (let's pretend it's done here for the sake of the example)
     return { north: 0, south: 10, west: 20, east: 40 };
   });
 }
@@ -82,40 +81,23 @@ class CustomObjectInput extends React.PureComponent {
     onBlur: PropTypes.func.isRequired
   };
 
-  state = {
-    mapFileUploaded: false
-  };
-
   firstFieldInput = React.createRef();
 
   handleFieldChange = (field, fieldPatchEvent) => {
     const { onChange, type, document } = this.props;
-
-    // Test if change involves a mapfile, and if it does, look for upload progress with a value of 100 (%)
-    if (
-      field.name === "mapfile" &&
-      fieldPatchEvent.patches.find(
-        patch =>
-          patch.type === "set" &&
-          patch.path[1] === "progress" &&
-          patch.value === 100
-      )
-    ) {
-      this.setState({ mapFileUploaded: true });
-    }
-
-    // If we previously have discovered that a file is uploaded,
-    // wait for the patches that inserts the asset reference in the document
-    if (
-      field.name === "mapfile" &&
-      this.state.mapFileUploaded &&
-      document.map.mapfile.asset
-    ) {
-      // Set the mapFileUploaded state to false first so this doesn't happen more than once
-      this.setState({ mapFileUploaded: false }, () => {
-        computeBounds(document).then(bounds => {
-          onChange(PatchEvent.from([set(JSON.stringify(bounds), ["bounds"])]));
-        });
+    
+    // If we see a set patch that sets the asset, use the file to compute the bounds
+    const setAssetPatch = fieldPatchEvent.patches.find(
+      patch =>
+        patch.type === "set" &&
+        patch.path.length === 1 &&
+        patch.path[0] === "asset" &&
+        patch.value &&
+        patch.value._ref
+    );
+    if (field.name === "mapfile" && setAssetPatch) {
+      computeBounds(setAssetPatch.value).then(bounds => {
+        onChange(PatchEvent.from([set(JSON.stringify(bounds), ["bounds"])]));
       });
     }
 
