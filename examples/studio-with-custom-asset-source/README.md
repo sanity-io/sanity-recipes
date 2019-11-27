@@ -2,7 +2,7 @@
 
 Here's the code for the [video tutorial](https://www.youtube.com/watch?v=qdA9gIdYb5s&feature=youtu.be) on how to make a custom asset source plugin. This repo is as is and will not be maintained.
 
-You can run this studio locally by cloning this repo and:
+You can run this studio locally by [downloading this folder](https://download-directory.github.io/?url=https://github.com/sanity-io/sanity-recipes/tree/master/examples/studio-with-custom-asset-source) and:
 
 ```bash
 # make sure you have the Sanity CLI
