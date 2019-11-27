@@ -1,0 +1,9 @@
+{
+  "parts": [
+    {
+      "name": "part:sanity-plugin-asset-source-webcam/image-asset-source",
+      "implements": "part:@sanity/form-builder/input/image/asset-source",
+      "path": "./index.js"
+    }
+  ]
+}
