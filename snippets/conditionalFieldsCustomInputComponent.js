@@ -61,7 +61,7 @@ class CustomObjectInput extends React.PureComponent {
              *  {
              *     name: 'aFieldWithConditions',
              *     type: 'object',
-             *     inputComponent: confitionalFields,
+             *     inputComponent: conditionalFields,
              *     fields: [
              *       {
              *         name: 'a',
