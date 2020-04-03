@@ -64,3 +64,6 @@ typings/
 yarn.lock
 package-lock.json
 
+# macos finder cache
+.DS_Store
+

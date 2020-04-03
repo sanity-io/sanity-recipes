@@ -8,10 +8,12 @@
     "test"
   ],
   "devDependencies": {
+    "@sanity/client": "^1.149.7",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-sanity": "^0.132.5",
     "jest": "^23.3.0",
+    "p-map": "^4.0.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.13.7"
   },
