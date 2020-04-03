@@ -34,6 +34,10 @@ Someone wanted to convert "whatever" to «whatever» when rendering. [`convertQu
 
 When uploading images and files, sometimes you are left with assets that are no longer in use by any documents. In these cases, you may want to purge the unused assets to free up some space and clear the clutter. This will probably be a core part of the Sanity toolkit at some point, but until then, [this script](snippets/deleteUnusedAssets.js) should help you!
 
+### Uploading assets concurrently
+
+A script which demonstrates how to upload multiple assets (images in this case) concurrently. Edit projectId, dataset and token. Also, edit the concurrency constant to change how many uploads run in parallel. To run the script: `node snippets/uploadImagesConcurrently.js`
+
 ### Rename fields
 
 Sometimes you want to change the name of a field. [This function](snippets/renameField.js) can be run with `sanity exec renameField.js --with-user-credentials` and do a migration even while users are working.
