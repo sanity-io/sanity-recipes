@@ -50,7 +50,13 @@ class CustomObjectInput extends React.PureComponent {
      */
     const {condition = false} = document
     return (
-      <Fieldset level={level} legend={type.title} description={type.description}>
+      <Fieldset 
+        level={level} 
+        legend={type.title} 
+        description={type.description} 
+        isCollapsible={!! type.options && !! type.options.collapsible} 
+        isCollapsed={!! type.options && !! type.options.collapsed} 
+      >
         This is my custom object input with fields
         <div>
           {type.fields
