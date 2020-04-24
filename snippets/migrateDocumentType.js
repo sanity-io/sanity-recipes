@@ -8,8 +8,8 @@ import client from "part:@sanity/base/client";
 // returned from the query.
 //
 // A few things to note:
-// - Changing the _type field on a document isn't allowed. They solution to this is to create a duplicate
-//   with a new _id and _type, then delete the old document and patch all referencing documens with the new _id
+// - Changing the _type field on a document isn't allowed. The solution to this is to create a duplicate
+//   with a new _id and _type, then delete the old document and patch all referencing documents with the new _id
 // - This script will exit if any of the patches on the referencing documents fail due to a revision mismatch
 //   (which means the document was edited between fetch => update)
 // - The query must eventually return an empty set, or else this script will continue indefinitely
