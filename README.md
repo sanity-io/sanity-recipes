@@ -48,7 +48,7 @@ Sometimes you want to change the name of a field. [This function](snippets/renam
 
 The [Sanity documentation](https://sanity.io/docs) contains several examples on how to create a Custom Input Component, but what if you want one which is also aware of language filter options? [This component](snippets/CustomObjectInputWithLanguageFilter.js) provides a good point of departure for making your own.
 
-### Conditional fields Custom Input Compoent
+### Conditional fields Custom Input Component
 
 This [custom input component](snippets/conditionalFieldsCustomInputComponent.js) shows an example of how to render a field conditionally of a field’s value in your document.
 
