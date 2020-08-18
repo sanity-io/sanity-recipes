@@ -1,4 +1,4 @@
-// initialValueTemamplate.js
+// initialValueTemplates.js
 
 /**
   * Learn more about initial values on https://www.sanity.io/docs/initial-value-templates-api
