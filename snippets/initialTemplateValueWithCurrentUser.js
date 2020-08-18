@@ -19,7 +19,7 @@ export default {
         author: {
           name,
           id,
-          _type: 'user'
+          _type: 'author'
         },
       }
     }
