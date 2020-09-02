@@ -18,10 +18,18 @@ const CustomPane = (props) => {
 
   useEffect(() => {
     // Get the current users groups.
+    
     // NOTE: The user will need read access to the "system.group" documents in
     // order to figure out which groups they are a part of. If they don't have
     // access to read those documents, we can never determine membership, so all
     // relevant groups should be given the 'read' grant for type 'system.group'
+    // in the case of custom access control. If you do not have custom access
+    // control set up, you can instead of querying for these documents:
+    
+    // import userStore from 'part:@sanity/base/user'
+    
+    // and check the 'role' property of the user returned from the
+    // userStore.currentUser observable.
     client.fetch('* [_type == "system.group" && $identity in members] {_id}')
       .then(groups => setGroups(groups.map(g => g._id)))
   }, [])
