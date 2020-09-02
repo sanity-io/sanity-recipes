@@ -7,9 +7,6 @@ import client from 'part:@sanity/base/client'
 const groupQuery = '* [_type == "system.group" && $identity in members] {_id}'
 
 // A fallback standard Desk structure
-const defaultStructure = S.list()
-  .title('Standard structure')
-  .items([])
 
 export default () => client.fetch(groupQuery)
 
@@ -19,23 +16,36 @@ export default () => client.fetch(groupQuery)
   .then(docs => docs.map(doc => doc._id.split('.').pop()))
   .then(groupNames => {
     // groupNames now reflect the groups the current user is a member of
+
+    // Build up an array of items depending on group membership. You may of
+    // course do this completely different. This is just an example.
+    const deskItems = []
     if (groupNames.includes('editors')) {
-      return S.list().title('Editors structure').items(
-        [] // Specific items to editors
-      )
+      // Add the items that editors should see
+      //deskItems.push(...partOfStructureOnlyForEditors)
     }
+
     if (groupNames.includes('wizards')) {
-      return S.list().title('Wizard structure').items(
-        [] // Specific items to wizards
+      // Add the items that wizards should see
+      //deskItems.push(...wizardDeskItems)
+    }
+
+    if (groupNames.includes('translators')) {
+      // Completely separate desk structure
+      return S.list().title('Translations').items(
+        [] // Would contain items only for translators, for instance
       )
     }
 
-    // Some standard desk structure for everyone else
-    return defaultStructure
+    return S.list().title('Content').items(
+      deskItems
+    )
   })
   .catch(() => {
-    // In case of any errors fetching the groups, just return the default
+    // In case of any errors fetching the groups, just return some standard
     // structure. This will only happen if the query cannot be performed for
     // some reason.
-    return defaultStructure
+    return S.list()
+      .title('Standard structure')
+      .items([])
   })
