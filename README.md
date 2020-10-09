@@ -13,7 +13,11 @@ Note that these things are just meant as inspiration and is usually not document
     - [Convert quotation marks in Portable Text](#convert-quotation-marks-in-portable-text)
   - [Content Migrations](#content-migrations)
     - [Delete unused assets](#delete-unused-assets)
+    - [Uploading assets concurrently](#uploading-assets-concurrently)
     - [Rename fields](#rename-fields)
+  - [Components](#components)
+    - [Filter-aware Custom Input Component](#filter-aware-custom-input-component)
+    - [Conditional fields Custom Input Component](#conditional-fields-custom-input-component)
   - [License](#license)
 
 ---
