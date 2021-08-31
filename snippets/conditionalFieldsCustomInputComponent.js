@@ -1,3 +1,6 @@
+// This is an example of _custom_ object type with conditional fields. 
+// Sanity Studio now supports conditional fields out-of-the-box by passing a callback funciton to the `hidden` property. Read more here: 
+// https://www.sanity.io/docs/conditional-fields
 import PropTypes from 'prop-types'
 import React from 'react'
 import Fieldset from 'part:@sanity/components/fieldsets/default'
