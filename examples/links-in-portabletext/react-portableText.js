@@ -1,15 +1,15 @@
-import PortableText from '@sanity/block-content-to-react'
+import { PortableText } from '@portabletext/react'
 
-const serializers = {
+const components = {
   marks: {
-    internalLink: ({mark, children}) => {
-      const {type, slug = {}, url} = mark
+    internalLink: ({value, children}) => {
+      const {_type, slug = {}, url} = value
       const href = url ? url : `/${_type}/${slug.current}`
       return <a href={href}>{children}</a>
     },
-    externalLink: ({mark, children}) => {
+    externalLink: ({value, children}) => {
       // Read https://css-tricks.com/use-target_blank/
-      const { blank, href } = mark
+      const { blank, href } = value
       return blank ?
         <a href={href} target="_blank" rel="noopener">{children}</a>
         : <a href={href}>{children}</a>
@@ -19,9 +19,9 @@ const serializers = {
 
 const BodyText = (props) => (
   <PortableText
-    blocks={props.blocks}
-    serializers={serializers}
+    value={props.blocks}
+    components={components}
   />
-  )
+)
 
-export BodyText
+export default BodyText
