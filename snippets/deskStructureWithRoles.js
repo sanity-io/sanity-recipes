@@ -13,7 +13,7 @@ import {
 } from 'rxjs/operators'
 
 export default () => userStore.me.pipe(
-  map(({user}) => {
+  map((user) => {
     const {role} = user
 
     if (role === 'administrator') {
