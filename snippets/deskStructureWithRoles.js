@@ -12,7 +12,7 @@ import {
   map
 } from 'rxjs/operators'
 
-export default () => userStore.currentUser.pipe(
+export default () => userStore.me.pipe(
   map(({user}) => {
     const {role} = user
 
