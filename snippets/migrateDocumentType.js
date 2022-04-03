@@ -1,4 +1,4 @@
-import client from "part:@sanity/base/client";
+import sanityClient from "part:@sanity/base/client";
 
 // Run this script with: `sanity exec --with-user-token migrations/migrate-document-type.js`
 //
@@ -14,6 +14,8 @@ import client from "part:@sanity/base/client";
 //   (which means the document was edited between fetch => update)
 // - The query must eventually return an empty set, or else this script will continue indefinitely
 // - There's no guard against loosing data on the old, as it might change between fetch and create of new
+
+const client = sanityClient.withConfig({apiVersion: '2020-04-24'});
 
 const OLD_TYPE = "movie";
 const NEW_TYPE = "film";
